@@ -50,16 +50,16 @@ public class DataGenerator {
                     "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=128&h=128&q=80");
             admin.setRoles(Set.of(Role.USER, Role.ADMIN));
             userRepository.save(admin);
-            logger.info("... generating 100 Task entities...");
-            ExampleDataGenerator<Task> taskRepositoryGenerator = new ExampleDataGenerator<>(Task.class,
-                    LocalDateTime.of(2022, 4, 23, 0, 0, 0));
-            taskRepositoryGenerator.setData(Task::setTaskName, DataType.WORD);
-            taskRepositoryGenerator.setData(Task::setTaskLabel, DataType.OCCUPATION);
-            taskRepositoryGenerator.setData(Task::setTaskPriority, DataType.NUMBER_UP_TO_10);
-            taskRepositoryGenerator.setData(Task::setTaskDueDate, DataType.DATE_NEXT_7_DAYS);
-            taskRepository.saveAll(taskRepositoryGenerator.create(100, seed));
+            // logger.info("... generating 100 Task entities...");
+            // ExampleDataGenerator<Task> taskRepositoryGenerator = new ExampleDataGenerator<>(Task.class,
+            //         LocalDateTime.of(2022, 4, 23, 0, 0, 0));
+            // taskRepositoryGenerator.setData(Task::setTaskName, DataType.WORD);
+            // taskRepositoryGenerator.setData(Task::setTaskLabel, DataType.OCCUPATION);
+            // taskRepositoryGenerator.setData(Task::setTaskPriority, DataType.NUMBER_UP_TO_10);
+            // taskRepositoryGenerator.setData(Task::setTaskDueDate, DataType.DATE_NEXT_7_DAYS);
+            // taskRepository.saveAll(taskRepositoryGenerator.create(100, seed));
 
-            logger.info("Generated demo data");
+            // logger.info("Generated demo data");
         };
     }
 
