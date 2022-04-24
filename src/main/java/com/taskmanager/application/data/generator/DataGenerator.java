@@ -1,14 +1,14 @@
 package com.taskmanager.application.data.generator;
 
 import com.taskmanager.application.data.Role;
-import com.taskmanager.application.data.entity.Task;
+// import com.taskmanager.application.data.entity.Task;
 import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.TaskRepository;
 import com.taskmanager.application.data.service.UserRepository;
-import com.vaadin.exampledata.DataType;
-import com.vaadin.exampledata.ExampleDataGenerator;
+// import com.vaadin.exampledata.DataType;
+// import com.vaadin.exampledata.ExampleDataGenerator;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import java.time.LocalDateTime;
+// import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class DataGenerator {
                 logger.info("Using existing database");
                 return;
             }
-            int seed = 123;
+            // int seed = 123;
 
             logger.info("Generating demo data");
 
@@ -60,6 +60,8 @@ public class DataGenerator {
             // taskRepository.saveAll(taskRepositoryGenerator.create(100, seed));
 
             // logger.info("Generated demo data");
+
+            //Commented out randomly generated tasks. Uncomment everything if needed
         };
     }
 
