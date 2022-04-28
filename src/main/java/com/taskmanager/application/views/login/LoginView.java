@@ -1,5 +1,6 @@
 package com.taskmanager.application.views.login;
 
+
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.PageTitle;
@@ -16,10 +17,13 @@ public class LoginView extends LoginOverlay {
         i18n.getHeader().setTitle("Task Manager");
         i18n.getHeader().setDescription("Login using user/user or admin/admin");
         i18n.setAdditionalInformation(null);
+       
         setI18n(i18n);
 
-        setForgotPasswordButtonVisible(false);
+        setForgotPasswordButtonVisible(true);
         setOpened(true);
+        
+       
     }
 
 }
