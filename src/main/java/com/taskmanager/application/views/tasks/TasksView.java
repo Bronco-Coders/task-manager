@@ -14,6 +14,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -44,11 +45,12 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     private TextField taskName;
     private TextField taskLabel;
-    private TextField taskPriority;
+    private Select<String> taskPriority;
     private DatePicker taskDueDate;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
+    private Button delete = new Button("Delete");
 
     private BeanValidationBinder<Task> binder;
 
@@ -93,8 +95,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Task.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(taskPriority).withConverter(new StringToIntegerConverter("Only numbers are allowed"))
-                .bind("taskPriority");
 
         binder.bindInstanceFields(this);
 
@@ -118,6 +118,14 @@ public class TasksView extends Div implements BeforeEnterObserver {
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the task details.");
             }
+        });
+        delete.addClickListener(e -> {
+            taskService.deleteTask(this.task);
+            if (this.task == null){
+                Notification.show("Null");
+
+            }
+            refreshGrid();
         });
 
     }
@@ -149,11 +157,24 @@ public class TasksView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        taskName = new TextField("Task Name");
-        taskLabel = new TextField("Task Label");
-        taskPriority = new TextField("Task Priority");
-        taskDueDate = new DatePicker("Task Due Date");
-        Component[] fields = new Component[]{taskName, taskLabel, taskPriority, taskDueDate};
+        taskName = new TextField("Name");
+        taskName.setRequiredIndicatorVisible(true);
+        taskName.setErrorMessage("This field is required");
+
+        taskLabel = new TextField("Label");
+
+        //taskPriority = new TextField("Task Priority");
+        taskPriority = new Select<>();
+        taskPriority.setLabel("Priority");
+        taskPriority.setItems("Low", "Medium", "High");
+        taskPriority.setPlaceholder("Select Priority");
+        taskPriority.setValue("Low");
+
+        taskDueDate = new DatePicker("Due Date");
+        taskDueDate.setRequiredIndicatorVisible(true);
+        taskDueDate.setErrorMessage("This field is required");
+
+        Component[] fields = new Component[] { taskName, taskLabel, taskPriority, taskDueDate };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -167,7 +188,8 @@ public class TasksView extends Div implements BeforeEnterObserver {
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttonLayout.add(save, cancel,delete);
         editorLayoutDiv.add(buttonLayout);
     }
 

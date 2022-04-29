@@ -8,7 +8,7 @@ public class Task extends AbstractEntity {
 
     private String taskName;
     private String taskLabel;
-    private Integer taskPriority;
+    private String taskPriority;
     private LocalDate taskDueDate;
 
     public String getTaskName() {
@@ -23,10 +23,10 @@ public class Task extends AbstractEntity {
     public void setTaskLabel(String taskLabel) {
         this.taskLabel = taskLabel;
     }
-    public Integer getTaskPriority() {
+    public String getTaskPriority() {
         return taskPriority;
     }
-    public void setTaskPriority(Integer taskPriority) {
+    public void setTaskPriority(String taskPriority) {
         this.taskPriority = taskPriority;
     }
     public LocalDate getTaskDueDate() {

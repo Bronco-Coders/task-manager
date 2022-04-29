@@ -29,6 +29,9 @@ public class TaskService {
     public void delete(UUID id) {
         repository.deleteById(id);
     }
+    public void deleteTask(Task entity){
+        repository.delete(entity);
+    }
 
     public Page<Task> list(Pageable pageable) {
         return repository.findAll(pageable);
