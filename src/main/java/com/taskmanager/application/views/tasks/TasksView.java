@@ -12,6 +12,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -19,13 +20,16 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.PermitAll;
@@ -40,6 +44,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     private final String TASK_ID = "taskID";
     private final String TASK_EDIT_ROUTE_TEMPLATE = "taskManager/%s/edit";
+    private static String task_status;
 
     private Grid<Task> grid = new Grid<>(Task.class, false);
 
@@ -47,10 +52,12 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private TextField taskLabel;
     private Select<String> taskPriority;
     private DatePicker taskDueDate;
+  //  private TextField taskStatus;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
     private Button delete = new Button("Delete");
+    private Button complete = new Button("Complete");
 
     private BeanValidationBinder<Task> binder;
 
@@ -68,7 +75,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
-
         add(splitLayout);
 
         // Configure Grid
@@ -76,29 +82,37 @@ public class TasksView extends Div implements BeforeEnterObserver {
         grid.addColumn("taskLabel").setAutoWidth(true);
         grid.addColumn("taskPriority").setAutoWidth(true);
         grid.addColumn("taskDueDate").setAutoWidth(true);
+        //grid.addColumn("taskStatus").setAutoWidth(true);
+        grid.addColumn(createStatusComponentRenderer("In Progress")).setHeader("Task Status")
+                .setAutoWidth(true);
         grid.setItems(query -> taskService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        // when a row is selected or deselected, populate form
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
-            } else {
-                clearForm();
-                UI.getCurrent().navigate(TasksView.class);
-            }
+        // multiselection mode to add checkbox next to each entry
+        grid.setSelectionMode(Grid.SelectionMode.MULTI);
+        
+        // populate form when a row is selected by checkbox
+        grid.asMultiSelect().addValueChangeListener(val -> {
+            new ArrayList<>(grid.getSelectedItems()).forEach(row -> {
+                if (val.getValue() != null) { 
+                    UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, row.getId()));
+                } else {
+                    clearForm();
+                    UI.getCurrent().navigate(TasksView.class);
+                }     
+            });
         });
-
+        
         // Configure Form
         binder = new BeanValidationBinder<>(Task.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
-
         binder.bindInstanceFields(this);
 
         cancel.addClickListener(e -> {
+            grid.deselectAll();
             clearForm();
             refreshGrid();
         });
@@ -111,6 +125,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 binder.writeBean(this.task);
 
                 taskService.update(this.task);
+                grid.deselectAll();
                 clearForm();
                 refreshGrid();
                 Notification.show("Task details stored.");
@@ -119,13 +134,29 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 Notification.show("An exception happened while trying to store the task details.");
             }
         });
-        delete.addClickListener(e -> {
-            taskService.deleteTask(this.task);
-            if (this.task == null){
-                Notification.show("Null");
 
-            }
-            refreshGrid();
+        delete.addClickListener(e -> {
+            // delete selected items
+            if (!grid.getSelectedItems().isEmpty()) {
+                new ArrayList<>(grid.getSelectedItems()).forEach(row -> {
+                    grid.deselectAll();
+                    taskService.deleteTask(row);
+                    clearForm();
+                    refreshGrid();
+                });
+            } 
+        });
+
+        complete.addClickListener(e -> {
+            // mark selected item(s) as completed
+            if (!grid.getSelectedItems().isEmpty()) {
+                new ArrayList<>(grid.getSelectedItems()).forEach(entry -> {
+                    grid.deselectAll(); 
+                    createStatusComponentRenderer("Completed"); 
+                    clearForm();
+                    refreshGrid();
+                });
+            } 
         });
 
     }
@@ -174,7 +205,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
         taskDueDate.setRequiredIndicatorVisible(true);
         taskDueDate.setErrorMessage("This field is required");
 
-        Component[] fields = new Component[] { taskName, taskLabel, taskPriority, taskDueDate };
+        Component[] fields = new Component[] { taskName, taskLabel, taskPriority, taskDueDate};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -189,7 +220,8 @@ public class TasksView extends Div implements BeforeEnterObserver {
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        buttonLayout.add(save, cancel,delete);
+        complete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        buttonLayout.add(save, cancel, delete, complete);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -214,4 +246,18 @@ public class TasksView extends Div implements BeforeEnterObserver {
         binder.readBean(this.task);
 
     }
+
+    private static ComponentRenderer<Span, Task> createStatusComponentRenderer(String s) {
+        task_status = s;
+        return new ComponentRenderer<>(Span::new, statusComponentUpdater);
+    }
+
+    // set the status of each task
+    private static final SerializableBiConsumer<Span, Task> statusComponentUpdater = (span, task) -> {
+        task.setTaskStatus(task_status);
+        boolean isAvailable = "In Progress".equals(task.getTaskStatus());
+        String theme = String.format("badge %s", isAvailable ? "success" : "error");
+        span.getElement().setAttribute("theme", theme);
+        span.setText(task.getTaskStatus());
+    };
 }

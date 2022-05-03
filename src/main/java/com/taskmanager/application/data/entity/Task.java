@@ -10,6 +10,7 @@ public class Task extends AbstractEntity {
     private String taskLabel;
     private String taskPriority;
     private LocalDate taskDueDate;
+    private String taskStatus;
 
     public String getTaskName() {
         return taskName;
@@ -35,5 +36,11 @@ public class Task extends AbstractEntity {
     public void setTaskDueDate(LocalDate taskDueDate) {
         this.taskDueDate = taskDueDate;
     }
-
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+    
 }
