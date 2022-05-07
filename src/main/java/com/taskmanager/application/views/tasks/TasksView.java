@@ -8,6 +8,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -29,6 +30,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +38,7 @@ import javax.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
+@CssImport(value = "./themes/taskmanager/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @PageTitle("Tasks")
 @Route(value = "taskManager/:taskID?/:action?(edit)", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -44,7 +47,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     private final String TASK_ID = "taskID";
     private final String TASK_EDIT_ROUTE_TEMPLATE = "taskManager/%s/edit";
-    private static String task_status;
+    //private static String task_status;
 
     private Grid<Task> grid = new Grid<>(Task.class, false);
 
@@ -52,7 +55,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private TextField taskLabel;
     private Select<String> taskPriority;
     private DatePicker taskDueDate;
-  //  private TextField taskStatus;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
@@ -82,9 +84,23 @@ public class TasksView extends Div implements BeforeEnterObserver {
         grid.addColumn("taskLabel").setAutoWidth(true);
         grid.addColumn("taskPriority").setAutoWidth(true);
         grid.addColumn("taskDueDate").setAutoWidth(true);
-        //grid.addColumn("taskStatus").setAutoWidth(true);
-        grid.addColumn(createStatusComponentRenderer("In Progress")).setHeader("Task Status")
-                .setAutoWidth(true);
+        grid.addColumn("taskStatus").setAutoWidth(true);
+        // grid.addColumn(createStatusComponentRenderer("In Progress")).setHeader("Task
+        // Status")
+        // .setAutoWidth(true);
+        grid.setClassNameGenerator(task -> {
+            if (task.getTaskStatus() == "Completed") {
+                return "complete";
+            }
+            if (task.getTaskStatus() == "Late") {
+                return "late";
+            }
+            return null;
+        });
+
+        // grid.addColumn(createStatusComponentRenderer("In Progress")).setHeader("Task
+        // Status")
+        // .setAutoWidth(true);
         grid.setItems(query -> taskService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -92,19 +108,19 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
         // multiselection mode to add checkbox next to each entry
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        
+
         // populate form when a row is selected by checkbox
         grid.asMultiSelect().addValueChangeListener(val -> {
             new ArrayList<>(grid.getSelectedItems()).forEach(row -> {
-                if (val.getValue() != null) { 
+                if (val.getValue() != null) {
                     UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, row.getId()));
                 } else {
                     clearForm();
                     UI.getCurrent().navigate(TasksView.class);
-                }     
+                }
             });
         });
-        
+
         // Configure Form
         binder = new BeanValidationBinder<>(Task.class);
 
@@ -122,14 +138,26 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 if (this.task == null) {
                     this.task = new Task();
                 }
-                binder.writeBean(this.task);
 
-                taskService.update(this.task);
-                grid.deselectAll();
-                clearForm();
-                refreshGrid();
-                Notification.show("Task details stored.");
-                UI.getCurrent().navigate(TasksView.class);
+                binder.writeBean(this.task);
+                if (this.task.getTaskName().length() < 1 || this.task.getTaskName() == null
+                        || this.task.getTaskDueDate() == null) {
+                    Notification.show("Task Not Saved");
+
+                } else {
+                    if (this.task.getTaskDueDate().compareTo(LocalDate.now()) < 0)
+                        this.task.setTaskStatus("Late");
+                    else
+                        this.task.setTaskStatus("In Progress");
+
+                    taskService.update(this.task);
+                    grid.deselectAll();
+                    clearForm();
+                    refreshGrid();
+                    Notification.show("Task details stored.");
+                    UI.getCurrent().navigate(TasksView.class);
+                }
+
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the task details.");
             }
@@ -144,19 +172,21 @@ public class TasksView extends Div implements BeforeEnterObserver {
                     clearForm();
                     refreshGrid();
                 });
-            } 
+            }
         });
 
         complete.addClickListener(e -> {
             // mark selected item(s) as completed
             if (!grid.getSelectedItems().isEmpty()) {
                 new ArrayList<>(grid.getSelectedItems()).forEach(entry -> {
-                    grid.deselectAll(); 
-                    createStatusComponentRenderer("Completed"); 
+                    grid.deselectAll();
+                    // createStatusComponentRenderer("Completed");
+                    entry.setTaskStatus("Completed");
+                    taskService.update(entry);
                     clearForm();
                     refreshGrid();
                 });
-            } 
+            }
         });
 
     }
@@ -194,7 +224,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
         taskLabel = new TextField("Label");
 
-        //taskPriority = new TextField("Task Priority");
+        // taskPriority = new TextField("Task Priority");
         taskPriority = new Select<>();
         taskPriority.setLabel("Priority");
         taskPriority.setItems("Low", "Medium", "High");
@@ -205,7 +235,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
         taskDueDate.setRequiredIndicatorVisible(true);
         taskDueDate.setErrorMessage("This field is required");
 
-        Component[] fields = new Component[] { taskName, taskLabel, taskPriority, taskDueDate};
+        Component[] fields = new Component[] { taskName, taskLabel, taskPriority, taskDueDate };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -235,6 +265,18 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private void refreshGrid() {
         grid.select(null);
         grid.getLazyDataView().refreshAll();
+        // checking for late tasks
+        if (!grid.getSelectedItems().isEmpty()) {
+            new ArrayList<>(grid.getSelectedItems()).forEach(entry -> {
+                grid.deselectAll();
+                if (entry.getTaskDueDate().compareTo(LocalDate.now()) > 0) {
+                    entry.setTaskStatus("Late");
+                    taskService.update(entry);
+                    clearForm();
+                    refreshGrid();
+                }
+            });
+        }
     }
 
     private void clearForm() {
@@ -247,17 +289,19 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     }
 
-    private static ComponentRenderer<Span, Task> createStatusComponentRenderer(String s) {
-        task_status = s;
-        return new ComponentRenderer<>(Span::new, statusComponentUpdater);
-    }
+    // private static ComponentRenderer<Span, Task>
+    // createStatusComponentRenderer(String s) {
+    // task_status = s;
+    // return new ComponentRenderer<>(Span::new, statusComponentUpdater);
+    // }
 
-    // set the status of each task
-    private static final SerializableBiConsumer<Span, Task> statusComponentUpdater = (span, task) -> {
-        task.setTaskStatus(task_status);
-        boolean isAvailable = "In Progress".equals(task.getTaskStatus());
-        String theme = String.format("badge %s", isAvailable ? "success" : "error");
-        span.getElement().setAttribute("theme", theme);
-        span.setText(task.getTaskStatus());
-    };
+    // // set the status of each task
+    // private static final SerializableBiConsumer<Span, Task>
+    // statusComponentUpdater = (span, task) -> {
+    // task.setTaskStatus(task_status);
+    // boolean isAvailable = "In Progress".equals(task.getTaskStatus());
+    // String theme = String.format("badge %s", isAvailable ? "success" : "error");
+    // span.getElement().setAttribute("theme", theme);
+    // span.setText(task.getTaskStatus());
+    // };
 }
