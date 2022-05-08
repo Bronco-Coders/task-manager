@@ -4,6 +4,7 @@ import com.taskmanager.application.data.entity.Task;
 import com.taskmanager.application.data.service.TaskService;
 import com.taskmanager.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -13,16 +14,14 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -245,14 +244,23 @@ public class TasksView extends Div implements BeforeEnterObserver {
     }
 
     private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setClassName("button-layout");
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        complete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        buttonLayout.add(save, cancel, delete, complete);
-        editorLayoutDiv.add(buttonLayout);
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+        save.addClickShortcut(Key.ENTER);
+        delete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+        delete.addClickShortcut(Key.DELETE);
+        cancel.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancel.addClickShortcut(Key.ESCAPE);
+        complete.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        //complete.getStyle().set("color", "rgb(247, 212, 16)");
+        
+        // add buttons to layouts
+        VerticalLayout buttonsLayout = new VerticalLayout();
+        HorizontalLayout buttonsRow1 = new HorizontalLayout();
+        buttonsRow1.add(save, delete);
+        HorizontalLayout buttonsRow2 = new HorizontalLayout();
+        buttonsRow2.add(complete, cancel);
+        buttonsLayout.add(buttonsRow1, buttonsRow2);
+        editorLayoutDiv.add(buttonsLayout);
     }
 
     private void createGridLayout(SplitLayout splitLayout) {
