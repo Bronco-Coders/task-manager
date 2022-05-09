@@ -1,5 +1,7 @@
 package com.taskmanager.application.views.login;
 
+import javax.annotation.security.PermitAll;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -12,6 +14,7 @@ import com.vaadin.flow.router.Route;
 
 @PageTitle("Register")
 @Route(value = "Register")
+@PermitAll
 public class RegisterView extends Composite {
 	
 	@Override
