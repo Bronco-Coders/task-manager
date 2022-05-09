@@ -1,33 +1,45 @@
 package com.taskmanager.application.views.login;
 
-
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouterLink;
+import javax.annotation.security.PermitAll;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 
 @PageTitle("Login")
-@Route(value = "login")
-public class LoginView extends LoginOverlay {
+@Route(value = "")
+public class LoginView extends VerticalLayout {
     public LoginView() {
-        setAction("login");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setJustifyContentMode(JustifyContentMode.CENTER);
+        TextField taskField = new TextField();
 
-        LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Task Manager");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
-        i18n.setAdditionalInformation(null);
-       
+        Button addButton = new Button("Login");
 
-        setI18n(i18n);
+        addButton.addClickListener(click -> {
 
-        setForgotPasswordButtonVisible(false);
-        setOpened(true);
-        
-        new RouterLink("Register", RegisterView.class);
-        
-       
+        });
+        addButton.addClickShortcut(Key.ENTER);
+
+        add(new H1("Login/Register"), layout,
+                new HorizontalLayout(
+                        taskField,
+                        addButton));
+        // layout.setComponentAlignment(layout, layout.set);
     }
-
 }

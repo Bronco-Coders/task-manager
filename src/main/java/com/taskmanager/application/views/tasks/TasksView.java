@@ -40,7 +40,7 @@ import org.springframework.data.domain.PageRequest;
 @CssImport(value = "./themes/taskmanager/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @PageTitle("Tasks")
 @Route(value = "taskManager/:taskID?/:action?(edit)", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
+@RouteAlias(value = "/tasks", layout = MainLayout.class)
 @PermitAll
 public class TasksView extends Div implements BeforeEnterObserver {
 

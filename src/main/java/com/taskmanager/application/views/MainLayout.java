@@ -1,7 +1,7 @@
 package com.taskmanager.application.views;
 
 import com.taskmanager.application.data.entity.User;
-import com.taskmanager.application.security.AuthenticatedUser;
+// import com.taskmanager.application.security.AuthenticatedUser;
 import com.taskmanager.application.views.tasks.TasksView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -71,11 +71,11 @@ public class MainLayout extends AppLayout {
 
     private H1 viewTitle;
 
-    private AuthenticatedUser authenticatedUser;
+    // private AuthenticatedUser authenticatedUser;
     private AccessAnnotationChecker accessChecker;
 
-    public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker) {
-        this.authenticatedUser = authenticatedUser;
+    public MainLayout(/*AuthenticatedUser authenticatedUser,*/ AccessAnnotationChecker accessChecker) {
+        // this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
 
         setPrimarySection(Section.DRAWER);
@@ -102,7 +102,7 @@ public class MainLayout extends AppLayout {
         appName.addClassNames("app-name");
 
         com.vaadin.flow.component.html.Section section = new com.vaadin.flow.component.html.Section(appName,
-                createNavigation(), createFooter());
+                createNavigation()/*, createFooter()*/);
         section.addClassNames("drawer-section");
         return section;
     }
@@ -133,34 +133,34 @@ public class MainLayout extends AppLayout {
         };
     }
 
-    private Footer createFooter() {
-        Footer layout = new Footer();
-        layout.addClassNames("footer");
+    // private Footer createFooter() {
+    //     Footer layout = new Footer();
+    //     layout.addClassNames("footer");
 
-        Optional<User> maybeUser = authenticatedUser.get();
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
+    //     Optional<User> maybeUser = authenticatedUser.get();
+    //     if (maybeUser.isPresent()) {
+    //         User user = maybeUser.get();
 
-            Avatar avatar = new Avatar(user.getName(), user.getProfilePictureUrl());
-            avatar.addClassNames("me-xs");
+    //         Avatar avatar = new Avatar(user.getName(), user.getProfilePictureUrl());
+    //         avatar.addClassNames("me-xs");
 
-            ContextMenu userMenu = new ContextMenu(avatar);
-            userMenu.setOpenOnClick(true);
-            userMenu.addItem("Logout", e -> {
-                authenticatedUser.logout();
-            });
+    //         ContextMenu userMenu = new ContextMenu(avatar);
+    //         userMenu.setOpenOnClick(true);
+    //         userMenu.addItem("Logout", e -> {
+    //             authenticatedUser.logout();
+    //         });
 
-            Span name = new Span(user.getName());
-            name.addClassNames("font-medium", "text-s", "text-secondary");
+    //         Span name = new Span(user.getName());
+    //         name.addClassNames("font-medium", "text-s", "text-secondary");
 
-            layout.add(avatar, name);
-        } else {
-            Anchor loginLink = new Anchor("login", "Sign in");
-            layout.add(loginLink);
-        }
+    //         layout.add(avatar, name);
+    //     } else {
+    //         Anchor loginLink = new Anchor("login", "Sign in");
+    //         layout.add(loginLink);
+    //     }
 
-        return layout;
-    }
+    //     return layout;
+    // }
 
     @Override
     protected void afterNavigation() {
