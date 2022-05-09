@@ -29,17 +29,14 @@ public class LoginView extends Composite {
 	protected Component initContent() {
 		TextField username = new TextField("Username");
 		PasswordField password1 = new PasswordField("Password");
-		PasswordField password2 = new PasswordField("Confirm password");
 		return new VerticalLayout(
 				new H2("Login"),
 				username,
 				password1,
-				password2,
                 new HorizontalLayout(
 				new Button("Login", clickevent -> login(
 						username.getValue(),
-						password1.getValue(),
-						password2.getValue()
+						password1.getValue()
 						)),
 						
 				
@@ -49,7 +46,7 @@ public class LoginView extends Composite {
 				);
 	}
 	
-	private void login(String username, String password1, String password2) {
+	private void login(String username, String password1) {
 		UI.getCurrent().navigate(TasksView.class);
 		
 	}
