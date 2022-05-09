@@ -1,11 +1,12 @@
 package com.taskmanager.application.data.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import javax.persistence.Entity;
+import java.util.UUID;
 
-@Entity
-public class Task extends AbstractEntity {
+public class Task extends AbstractEntity implements Serializable {
 
+    private String id;
     private String taskName;
     private String taskLabel;
     private String taskPriority;

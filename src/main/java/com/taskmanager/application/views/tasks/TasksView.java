@@ -88,10 +88,10 @@ public class TasksView extends Div implements BeforeEnterObserver {
         // Status")
         // .setAutoWidth(true);
         grid.setClassNameGenerator(task -> {
-            if (task.getTaskStatus() == "Completed") {
+            if (task.getTaskStatus().equals("Completed")) {
                 return "complete";
             }
-            if (task.getTaskStatus() == "Late") {
+            if (task.getTaskStatus().equals("Late")) {
                 return "late";
             }
             return null;
@@ -101,8 +101,8 @@ public class TasksView extends Div implements BeforeEnterObserver {
         // Status")
         // .setAutoWidth(true);
         grid.setItems(query -> taskService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+                    PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query))
+                ).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // multiselection mode to add checkbox next to each entry
@@ -192,7 +192,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> taskId = event.getRouteParameters().get(TASK_ID).map(UUID::fromString);
+        Optional<String> taskId = event.getRouteParameters().get(TASK_ID);
         if (taskId.isPresent()) {
             Optional<Task> taskFromBackend = taskService.get(taskId.get());
             if (taskFromBackend.isPresent()) {

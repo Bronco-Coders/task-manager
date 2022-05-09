@@ -8,17 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 @Service
 public class TaskService {
 
-    private final TaskRepository repository;
+    private TaskRepository repository;
 
     @Autowired
     public TaskService(TaskRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<Task> get(UUID id) {
+    public Optional<Task> get(String id) {
         return repository.findById(id);
     }
 
@@ -26,7 +28,7 @@ public class TaskService {
         return repository.save(entity);
     }
 
-    public void delete(UUID id) {
+    public void delete(String id) {
         repository.deleteById(id);
     }
     public void deleteTask(Task entity){

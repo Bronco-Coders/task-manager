@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    private UserRepository repository;
 
     @Autowired
     public UserService(UserRepository repository) {
