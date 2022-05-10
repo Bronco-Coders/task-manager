@@ -2,6 +2,7 @@ package com.taskmanager.application.views.login;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpSession;
 
 import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.UserService;
@@ -18,6 +19,11 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 //@PermitAll
 @PageTitle("Login")
 @Route(value = "")
@@ -45,7 +51,7 @@ public class LoginView extends Composite {
                 )
 				);
 	}
-	
+
 	private void login(String username, String password1) {
 		UI.getCurrent().navigate(TasksView.class);
 		
