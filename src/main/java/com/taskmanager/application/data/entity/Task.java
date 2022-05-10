@@ -1,17 +1,27 @@
 package com.taskmanager.application.data.entity;
 
+import org.springframework.data.annotation.Id;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
 public class Task extends AbstractEntity implements Serializable {
 
-    private String id;
+    private String userId;
     private String taskName;
     private String taskLabel;
     private String taskPriority;
     private LocalDate taskDueDate;
     private String taskStatus;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getTaskName() {
         return taskName;

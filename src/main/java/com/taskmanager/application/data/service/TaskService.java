@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class TaskService {
 
-    private TaskRepository repository;
+    private final TaskRepository repository;
 
     @Autowired
     public TaskService(TaskRepository repository) {
