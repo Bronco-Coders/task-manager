@@ -12,8 +12,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -29,21 +32,24 @@ public class LoginView extends Composite {
 	protected Component initContent() {
 		TextField username = new TextField("Username");
 		PasswordField password1 = new PasswordField("Password");
-		return new VerticalLayout(
-				new H2("Login"),
-				username,
-				password1,
-                new HorizontalLayout(
-				new Button("Login", clickevent -> login(
-						username.getValue(),
-						password1.getValue()
-						)),
-						
+		VerticalLayout layout = new VerticalLayout(
+			new H2("Login"),
+			username,
+			password1,
+			new HorizontalLayout(
+			new Button("Login", clickevent -> login(
+					username.getValue(),
+					password1.getValue()
+					)),
+					
+			
+			new Button("Register", clickevent -> goTo(
+					))
+			) 
+			);
+			layout.setAlignItems(Alignment.CENTER);
+		return layout;
 				
-                new Button("Register", clickevent -> goTo(
-						))
-                )
-				);
 	}
 	
 	private void login(String username, String password1) {
