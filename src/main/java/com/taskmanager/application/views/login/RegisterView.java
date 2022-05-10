@@ -35,7 +35,7 @@ public class RegisterView extends Composite {
 			username,
 			password1,
 			password2,
-			new Button("Send", clickevent -> register(
+			new Button("Create Account", clickevent -> register(
 					username.getValue(),
 					password1.getValue(),
 					password2.getValue()))
