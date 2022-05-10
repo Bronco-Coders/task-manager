@@ -62,13 +62,13 @@ public class LoginView extends Composite {
 	}
 
 	private void login(String username, String password1) {
-		if (userService.findByUsername(username).getName() == username){
+		if (userService.findByUsername(username) != null){
 				loggedUser = userService.findByUsername(username);
 				ComponentUtil.setData(UI.getCurrent(), LoginView.class,this);
 				UI.getCurrent().navigate(TasksView.class);
 		}
 		else
-		Notification.show("Invalid login");
+			Notification.show("Invalid login");
 		
 				
 	}
