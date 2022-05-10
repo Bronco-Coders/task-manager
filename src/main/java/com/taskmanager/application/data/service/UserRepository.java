@@ -2,9 +2,11 @@ package com.taskmanager.application.data.service;
 
 import com.taskmanager.application.data.entity.User;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Component;
 
-public interface UserRepository extends JpaRepository<User, UUID> {
+@Component
+public interface UserRepository extends MongoRepository<User, UUID> {
 
     User findByUsername(String username);
 }

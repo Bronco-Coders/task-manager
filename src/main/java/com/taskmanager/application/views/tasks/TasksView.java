@@ -1,7 +1,9 @@
 package com.taskmanager.application.views.tasks;
 
 import com.taskmanager.application.data.entity.Task;
+import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.TaskService;
+import com.taskmanager.application.data.service.UserService;
 import com.taskmanager.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
@@ -34,8 +36,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.PermitAll;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @CssImport(value = "./themes/taskmanager/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @PageTitle("Tasks")
@@ -67,7 +72,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private final TaskService taskService;
 
     @Autowired
-    public TasksView(TaskService taskService) {
+    public TasksView(TaskService taskService, UserService userService) {
         this.taskService = taskService;
         addClassNames("tasks-view");
 
@@ -88,10 +93,10 @@ public class TasksView extends Div implements BeforeEnterObserver {
         // Status")
         // .setAutoWidth(true);
         grid.setClassNameGenerator(task -> {
-            if (task.getTaskStatus() == "Completed") {
+            if (task.getTaskStatus().equals("Completed")) {
                 return "complete";
             }
-            if (task.getTaskStatus() == "Late") {
+            if (task.getTaskStatus().equals("Late")) {
                 return "late";
             }
             return null;
@@ -101,8 +106,8 @@ public class TasksView extends Div implements BeforeEnterObserver {
         // Status")
         // .setAutoWidth(true);
         grid.setItems(query -> taskService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+                    PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query))
+                ).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // multiselection mode to add checkbox next to each entry
@@ -192,7 +197,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> taskId = event.getRouteParameters().get(TASK_ID).map(UUID::fromString);
+        Optional<String> taskId = event.getRouteParameters().get(TASK_ID);
         if (taskId.isPresent()) {
             Optional<Task> taskFromBackend = taskService.get(taskId.get());
             if (taskFromBackend.isPresent()) {

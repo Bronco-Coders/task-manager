@@ -2,18 +2,10 @@ package com.taskmanager.application.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.taskmanager.application.data.Role;
-import java.util.Set;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "application_user")
-public class User extends AbstractEntity {
+import java.io.Serializable;
+import java.util.Set;
+public class User extends AbstractEntity implements Serializable {
 
     private String username;
     private String name;
