@@ -5,7 +5,9 @@ import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.TaskService;
 import com.taskmanager.application.data.service.UserService;
 import com.taskmanager.application.views.MainLayout;
+import com.taskmanager.application.views.login.LoginView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -59,6 +61,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private TextField taskLabel;
     private Select<String> taskPriority;
     private DatePicker taskDueDate;
+    public User currentUser = ComponentUtil.getData(UI.getCurrent(), LoginView.class).loggedUser;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");

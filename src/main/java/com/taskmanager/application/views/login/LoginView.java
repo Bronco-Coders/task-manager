@@ -8,6 +8,7 @@ import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.UserService;
 import com.taskmanager.application.views.tasks.TasksView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -33,7 +34,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class LoginView extends Composite {
 	@Resource
 	private UserService userService;
-	
+	public String loggedUsername;
+	public User loggedUser;
+
 	@Override
 	protected Component initContent() {
 		TextField username = new TextField("Username");
@@ -59,8 +62,15 @@ public class LoginView extends Composite {
 	}
 
 	private void login(String username, String password1) {
-		UI.getCurrent().navigate(TasksView.class);
+		if (userService.findByUsername(username).getName() == username){
+				loggedUser = userService.findByUsername(username);
+				ComponentUtil.setData(UI.getCurrent(), LoginView.class,this);
+				UI.getCurrent().navigate(TasksView.class);
+		}
+		else
+		Notification.show("Invalid login");
 		
+				
 	}
     private void goTo(){
         UI.getCurrent().navigate(RegisterView.class);
