@@ -1,10 +1,8 @@
 package com.taskmanager.application.data.entity;
 
-import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public class Task extends AbstractEntity implements Serializable {
 

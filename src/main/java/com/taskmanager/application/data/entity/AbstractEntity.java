@@ -1,6 +1,5 @@
 package com.taskmanager.application.data.entity;
 
-import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 

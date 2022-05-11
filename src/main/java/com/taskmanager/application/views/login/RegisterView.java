@@ -1,7 +1,6 @@
 package com.taskmanager.application.views.login;
 
 import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
 
 import com.taskmanager.application.data.entity.User;
 import com.taskmanager.application.data.service.UserService;
@@ -60,7 +59,7 @@ public class RegisterView extends Composite {
 			}
 			User user = new User();
 			user.setUsername(username);
-			user.setHashedPassword(password1);
+			user.setPassword(password1);
 			userService.update(user);
 			Notification.show("Sign up successfully!");
 			UI.getCurrent().navigate(LoginView.class);

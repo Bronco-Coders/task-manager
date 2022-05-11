@@ -36,13 +36,10 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.security.PermitAll;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @CssImport(value = "./themes/taskmanager/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @PageTitle("Tasks")
